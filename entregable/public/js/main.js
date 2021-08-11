@@ -4,6 +4,7 @@ socket.on('message', function(data){
   render(data);
 });
 
+// Mensajes del Chat
 function render(data){
   var html=data.map(function(elem,index){
     return(`<div>

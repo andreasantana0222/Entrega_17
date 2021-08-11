@@ -76,6 +76,8 @@ const server = http.listen(PORT, () => {
 // cuando se realice la conexion, se ejecutara una sola vez
 io.on('connection', (socket) => {
     console.log("Usuario conectado");
+    console.log(productos.read());
+
     socket.emit('actualizar', productos.read());
     //socket.emit('messages', messages);
     socket.emit('messages', chat.read());

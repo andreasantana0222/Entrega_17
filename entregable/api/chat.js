@@ -1,43 +1,53 @@
-//let archivo='chat.txt';
-//const fs=require ('fs');
-const options = require('../config/mensajes');
-const knex = require('knex')(options);
+//Knex
+const options = require("../config/mensajes");
+const knex = require("knex")(options);
 
 class Chat {
-    constructor() {
-        // incializar variables
+  constructor() {
+    // incializar variables
+  }
 
-    }
+  read() {
+    console.log("read");
+    async () => {
+      try {
+        let mensajes = await knex.from("mensajes").select("*");
+        return mensajes;
+      } catch (error) {
+        throw error;
+      } finally {
+        console.log("cerrando conexion...");
+        knex.destroy();
+      }
+    };
+  }
 
-     read(){
-      //console.log('read');
-     //const contenido = fs.readFileSync(this.archivo, 'utf-8');
-     try{
-       const contenido=  knex.from('mensajes').select('author','email','text','datetime');
-       console.log(contenido);
-       //Envio objeto
-       return contenido;
-     } catch(error) {
-       throw error;
-     }
-   }
+  save(objeto) {
+    console.log("save");
 
-   save(objeto){
-     console.log('save');
+    const mensajes = this.read();
 
-     let item={
-       author:objeto.author,
-       text:objeto.text,
-       email:objeto.email,
-       datetime:(new Date(Date.now())).toLocaleString()
-     }
-     knex('mensajes').insert(item);
-      //fs.writeFileSync(archivo,JSON.stringify(contenido,null,'\t'));
+    let id = mensajes[mensajes.length].id + 1;
 
-     return item;
-   }
+    let item = {
+      author: objeto.author,
+      text: objeto.text,
+      email: objeto.email,
+      datetime: new Date(Date.now()).toLocaleString(),
+    };
 
-
+    async () => {
+      try {
+        await knex("mensajes").insert(item);
+        return item;
+      } catch (error) {
+        throw error;
+      } finally {
+        console.log("cerrando conexion...");
+        knex.destroy();
+      }
+    };
+  }
 }
 
 module.exports = new Chat();

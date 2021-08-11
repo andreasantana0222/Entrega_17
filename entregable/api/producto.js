@@ -1,58 +1,88 @@
-//let archivo='productos.txt';
-//const fs=require ('fs');
-const options = require('../config/productos');
-const knex = require('knex')(options);
+//Knex
+const options = require("../config/productos");
+const knex = require("knex")(options);
+
 
 class Productos {
-    constructor() {
-        // incializar variables
-        this.listaProductos=[{}];
-
+  constructor() {
+    // incializar variables
     }
 
-     read(){
-      //console.log('read');
-     //const contenido = fs.readFileSync(this.archivo, 'utf-8');
-     //this.listaProductos=JSON.parse(contenido);
-     const contenido=  knex.from('productos').select('id','title','price','thumbnail');
-     console.log(contenido);
-     //console.log(JSON.parse(contenido));
-     //Envio objeto
-     return contenido;
-   }
+  read() {
+    console.log("read");
+     async() => {
+      try {
+        let productos = await knex.from("productos").select("*");
+        return productos;
+      } catch (error) {
+        throw error;
+      } finally {
+        console.log("cerrando conexion...");
+        knex.destroy();
+      }
+    };
+    
+  }
 
-   save(objeto){
-     console.log('save');
+  save(objeto) {
+    console.log("save");
+    const productos = this.read();
 
-     //productos.push(item);
-      //fs.writeFileSync(archivo,JSON.stringify(productos,null,'\t'));
-      knex('productos').insert(objeto);
-      let item = knex.from('productos').select('*').where({title:objeto.title});
-     return item;
-   }
+    let id = productos[productos.length].id + 1;
+    let item = {
+      title: objeto.title,
+      price: objeto.price,
+      thumbnail: objeto.thumbnail,
+      id: id,
+    };
+    async () => {
+      try {
+        await knex("productos").insert(item);
+        return item;
+      } catch (error) {
+        throw error;
+      } finally {
+        console.log("cerrando conexion...");
+        knex.destroy();
+      }
+    };
+  }
 
-   update(id,objeto){
+  update(id, objeto) {
+    async () => {
+      try {
+        await knex
+          .from("productos")
+          .where("id", id)
+          .update(objeto);
+        return objeto;
+      } catch (error) {
+        throw error;
+      } finally {
+        console.log("cerrando conexion...");
+        knex.destroy();
+      }
+    };
+  }
 
-     let item={
-       title:objeto.title,
-       price:objeto.price,
-       thumbnail:objeto.thumbnail
-     }
+  delete(id) {
+    async ()=>{
+      try {
+        const item = await knex.from('productos').select('*').where('id', '=', id);
+        
+        return item.then( async ()=>{
+          await knex.from('productos').where('id', '=', id).del();
+        });
+      }catch (error) {
+        throw error;
+      } finally {
+        console.log("cerrando conexion...");
+        knex.destroy();
+      }     
 
-     knex.from('productos').where({id:id}).update(item);
-     //fs.writeFileSync(archivo,JSON.stringify(productos,null,'\t'));
-    return item;
-
-   }
-
-   delete(id){
-
-       let item = knex.from('productos').select('*').where({id:id});
-        knex.from('productos').where({id:id}).del();
-      return item;
-
-        }
-
+    }   
+    
+  }
 }
 
 module.exports = new Productos();

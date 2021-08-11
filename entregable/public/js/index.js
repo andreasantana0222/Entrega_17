@@ -4,6 +4,7 @@ const inputTitle = document.querySelector('#input-title')
 const inputPrice = document.querySelector('#input-price')
 const inputImg = document.querySelector('#input-img')
 
+//Tabla de productos
 const template= Handlebars.compile(`
   <h1>Vista de Productos</h1>
               <br>
