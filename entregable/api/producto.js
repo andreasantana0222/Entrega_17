@@ -2,86 +2,68 @@
 const options = require("../config/productos");
 const knex = require("knex")(options);
 
-
 class Productos {
   constructor() {
     // incializar variables
-    }
-
-  read() {
-    console.log("read");
-     async() => {
-      try {
-        let productos = await knex.from("productos").select("*");
-        return productos;
-      } catch (error) {
-        throw error;
-      } finally {
-        console.log("cerrando conexion...");
-        knex.destroy();
-      }
-    };
-    
   }
 
-  save(objeto) {
-    console.log("save");
-    const productos = this.read();
+  async read() {
+    console.log("read productos");
 
-    let id = productos[productos.length].id + 1;
+    try {
+      let productos = await knex.from("productos").select("*");
+      return productos;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async save(objeto) {
+    console.log("save productos");
+    const productos = await this.read();
+
+    let id = productos.length+ 1;
     let item = {
       title: objeto.title,
       price: objeto.price,
       thumbnail: objeto.thumbnail,
       id: id,
     };
-    async () => {
-      try {
-        await knex("productos").insert(item);
-        return item;
-      } catch (error) {
-        throw error;
-      } finally {
-        console.log("cerrando conexion...");
-        knex.destroy();
-      }
-    };
+
+    try {
+      await knex("productos").insert(item);
+      return item;
+    } catch (error) {
+      throw error;
+    }
   }
 
-  update(id, objeto) {
-    async () => {
-      try {
-        await knex
-          .from("productos")
-          .where("id", id)
-          .update(objeto);
-        return objeto;
-      } catch (error) {
-        throw error;
-      } finally {
-        console.log("cerrando conexion...");
-        knex.destroy();
-      }
-    };
+  async update(id, objeto) {
+    try {
+      await knex
+        .from("productos")
+        .where("id", id)
+        .update(objeto);
+      return objeto;
+    } catch (error) {
+      throw error;
+    }
   }
 
-  delete(id) {
-    async ()=>{
-      try {
-        const item = await knex.from('productos').select('*').where('id', '=', id);
-        
-        return item.then( async ()=>{
-          await knex.from('productos').where('id', '=', id).del();
-        });
-      }catch (error) {
-        throw error;
-      } finally {
-        console.log("cerrando conexion...");
-        knex.destroy();
-      }     
-
-    }   
-    
+  async delete(id) {
+    try {
+      const item = await knex
+        .from("productos")
+        .select("*")
+        .where("id", "=", id);
+      await knex
+        .from("productos")
+        .where("id", "=", id)
+        .del();
+      return item;
+    } catch (error) {
+      throw error;
+    }
   }
 }
 

@@ -2,7 +2,7 @@
 const sqlite3 = {
     client: 'sqlite3',
     connection: {
-        filename: __dirname + '/../db/mensajes.sqlite'
+        filename: __dirname + 'mensajes.sqlite'
     },
     useNullAsDefault: true
 }
